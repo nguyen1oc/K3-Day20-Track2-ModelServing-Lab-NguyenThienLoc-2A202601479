@@ -150,19 +150,23 @@ không đơn điệu này cho thấy contention và biến động thời gian, 
 > Bỏ trống nếu không làm. Xem `bonus/README.md`. Đừng làm hết — **một** finding sâu
 > ăn điểm hơn năm bảng nông.
 
-**Đã làm:** _<B1 build-compare / B2 sweep nào / B4 challenge nào / B5 lựa chọn nào>_
+**Đã làm:** B5 / C8 semantic cache (offline demo)
 
 **Numbers:**
 
 ```
-before:  <số>
-after:   <số>
-speedup: <X.Y>×
+before:  8 LLM calls, 2000 ms simulated decode
+after:   5 LLM calls, 1250 ms simulated decode
+speedup: 1.60× simulated
 ```
 
 **Điều này nói lên gì mà deck chưa nói:**
 
-_(để trống nếu bạn không làm phần này)_
+Ở threshold 0.80, semantic cache hit 3/8 requests (38%) và bỏ qua 3 lần gọi LLM,
+tương đương khoảng 750 ms decode mô phỏng. Các cache hit trả về gần như ngay lập tức,
+nhưng threshold sweep phẳng vì offline mode dùng bag-of-words, khiến similarity chủ yếu
+là 0 hoặc 1. Kết quả này chỉ chứng minh logic cache; muốn tune threshold đáng tin cậy
+cần embedding model thật. Threshold quá thấp cũng có nguy cơ trả về câu trả lời cũ hoặc sai.
 
 ---
 
