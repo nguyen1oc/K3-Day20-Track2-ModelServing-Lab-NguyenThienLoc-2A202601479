@@ -150,23 +150,24 @@ không đơn điệu này cho thấy contention và biến động thời gian, 
 > Bỏ trống nếu không làm. Xem `bonus/README.md`. Đừng làm hết — **một** finding sâu
 > ăn điểm hơn năm bảng nông.
 
-**Đã làm:** B5 / C8 semantic cache (offline demo)
+**Đã làm:** B2 GPU offload sweep, B3 before/after, B5 / C8 semantic cache (offline demo)
 
 **Numbers:**
 
 ```
-before:  8 LLM calls, 2000 ms simulated decode
-after:   5 LLM calls, 1250 ms simulated decode
-speedup: 1.60× simulated
+before:  15.5 tok/s at `-ngl 0` (CPU-only)
+after:   27.9 tok/s at `-ngl 16`
+speedup: 1.80×
 ```
 
 **Điều này nói lên gì mà deck chưa nói:**
 
-Ở threshold 0.80, semantic cache hit 3/8 requests (38%) và bỏ qua 3 lần gọi LLM,
-tương đương khoảng 750 ms decode mô phỏng. Các cache hit trả về gần như ngay lập tức,
-nhưng threshold sweep phẳng vì offline mode dùng bag-of-words, khiến similarity chủ yếu
-là 0 hoặc 1. Kết quả này chỉ chứng minh logic cache; muốn tune threshold đáng tin cậy
-cần embedding model thật. Threshold quá thấp cũng có nguy cơ trả về câu trả lời cũ hoặc sai.
+GPU offload đạt đỉnh ở `-ngl 16`; offload toàn bộ (`-ngl 99`) chỉ đạt 17.1 tok/s. GPU
+MX350 2 GB có VRAM hạn chế cho weights, KV cache và runtime overhead, nên partial offload
+cân bằng tốt hơn giữa GPU và host-device transfer. Tôi cũng chạy B5 offline semantic cache:
+threshold 0.80 có hit rate 3/8 (38%), tiết kiệm 3 LLM calls và 750 ms decode mô phỏng.
+Kết quả cache chỉ chứng minh logic vì dùng bag-of-words stub; muốn tune threshold thật cần
+embedding model chuyên dụng. Threshold quá thấp có thể trả về câu trả lời cũ hoặc sai.
 
 ---
 
